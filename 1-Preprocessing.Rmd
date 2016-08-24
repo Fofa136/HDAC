@@ -99,7 +99,7 @@ print(message)
 ```
 
 
-## Save the resulting dataframe as an excel file
+## Save the resulting data frame as an Excel file
 
 ```{r, tidy = TRUE, warning = FALSE, message = FALSE, error = FALSE}
 
@@ -111,6 +111,22 @@ new_df <- df[df$CANONICAL_SMILES %in% curated_smiles, ]
 get_unique <- new_df[!duplicated(new_df$CANONICAL_SMILES), ]
 new_df_2 <- get_unique[, !(names(get_unique) %in% "STANDARD_TYPE")]
 
+write.xlsx(new_df_2, file = "pre-processed.xlsx", sheetName = "Sheet1", row.names = FALSE)
+```
 
-write.xlsx(new_df_2, file = "Preprocessed_Human-HDAC1-ChEMBL21.xlsx", sheetName = "Sheet1", row.names = FALSE)
+## Create a SMILES file
+
+```{r, tidy = TRUE, warning = FALSE, message = FALSE, error = FALSE}
+
+library(xlsx)
+library(readxl)
+
+# df_preprocessed <- suppressWarnings(read_excel("pre-processed.xlsx"))
+cpd_smiles <- new_df_2[, c("CANONICAL_SMILES", "CMPD_CHEMBLID")]
+
+# fileConn<-file("compounds.smi")
+# writeLines(cpd_smiles, fileConn)
+# close(fileConn)
+
+write.csv(cpd_smiles, file = "compounds.smi", quote = FALSE, row.names = FALSE, col.names = FALSE)
 ```
