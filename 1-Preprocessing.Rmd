@@ -76,7 +76,7 @@ post_df_2 <- subset(post_df_1, STANDARD_UNITS == "nM")
 
 
 non_redundant <- post_df_2[, c("CANONICAL_SMILES", "STANDARD_VALUE")]
-redundant <- df_4[df_4$CANONICAL_SMILES %in% unique, ] 
+redundant <- df_4[df_4$CANONICAL_SMILES %in% unique, ]  #########################
 redundant <- subset(redundant, !duplicated(redundant[, c("CANONICAL_SMILES")]))
 redundant <- subset(redundant, select = -STANDARD_VALUE)
 STANDARD_VALUE <- keep$STANDARD_VALUE
@@ -85,12 +85,12 @@ cleaned_redundant <- data.frame(CANONICAL_SMILES, STANDARD_VALUE)
 curated_data <- rbind(non_redundant, cleaned_redundant)
 curated_data_na_removed <- na.omit(curated_data)
 
+non_redundant_compound <- paste0("number of non-redundant compounds: ", 
+                                 nrow(non_redundant))
 unique <- paste0("number of unique redundant compounds: ", length(unique))
 sd_2 <- paste0("Compounds left that are kept", " which has a sd of lower than two: ",
                nrow(keep))
 combined <- paste0("Combined data points: ", nrow(curated_data))
-non_redundant_compound <- paste0("number of non-redundant compounds: ", 
-                                 nrow(non_redundant))
 curated <- paste0("number of curated data points where missing smiles are removed: ", nrow(curated_data_na_removed))
 
 message <- c(non_redundant_compound, unique, sd_2, combined, curated)
@@ -107,11 +107,11 @@ library(xlsx)
 
 curated_smiles <- curated_data_na_removed$CANONICAL_SMILES
 STANDARD_VALUE <- curated_data_na_removed$STANDARD_VALUE
-new_df <- df[df$CANONICAL_SMILES %in% curated_smiles, ]
+new_df <- df_4[df_4$CANONICAL_SMILES %in% curated_smiles, ]
 get_unique <- new_df[!duplicated(new_df$CANONICAL_SMILES), ]
-new_df_2 <- get_unique[, !(names(get_unique) %in% "STANDARD_TYPE")]
+#new_df_2 <- get_unique[, !(names(get_unique) %in% "STANDARD_TYPE")]
 
-write.xlsx(new_df_2, file = "pre-processed.xlsx", sheetName = "Sheet1", row.names = FALSE)
+write.xlsx(get_unique, file = "pre-processed.xlsx", sheetName = "Sheet1", row.names = FALSE)
 ```
 
 ## Create a SMILES file
@@ -122,7 +122,7 @@ library(xlsx)
 library(readxl)
 
 # df_preprocessed <- suppressWarnings(read_excel("pre-processed.xlsx"))
-cpd_smiles <- new_df_2[, c("CANONICAL_SMILES", "CMPD_CHEMBLID")]
+cpd_smiles <- get_unique[, c("CANONICAL_SMILES", "CMPD_CHEMBLID")]
 
 # fileConn<-file("compounds.smi")
 # writeLines(cpd_smiles, fileConn)
